@@ -1,0 +1,34 @@
+@model FollowUp
+@{
+    ViewData["Title"] = $"Delete Task - {Model.Subject}";
+}
+
+<div class="row justify-content-center my-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Delete Task Confirmation</h5>
+            </div>
+            <div class="card-body p-4">
+                <p class="lead">Are you sure you want to delete this activity / follow-up task?</p>
+                
+                <div class="bg-light p-3 rounded mb-4">
+                    <div class="mb-2"><strong>Subject:</strong> @Model.Subject</div>
+                    <div class="mb-2"><strong>Type:</strong> @Model.Type</div>
+                    <div class="mb-2"><strong>Due Date:</strong> @Model.DueDate.ToString("MMM dd, yyyy hh:mm tt")</div>
+                    <div class="mb-2"><strong>Priority:</strong> @Model.Priority</div>
+                    <div class="mb-2"><strong>Status:</strong> @Model.Status</div>
+                    <div><strong>Assigned To:</strong> @(Model.AssignedToUser?.FullName ?? "Unassigned")</div>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-danger px-4 fw-semibold">Delete Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

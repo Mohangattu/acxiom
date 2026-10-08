@@ -1,0 +1,78 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign In - Acxiom CRM";
+}
+
+<div class="row justify-content-center my-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="display-6 fw-bold text-primary mb-1">Acxiom CRM</div>
+                    <p class="text-muted">Sign in to your CRM workspace</p>
+                </div>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger py-2" role="alert">
+                        <div asp-validation-summary="All" class="text-danger small mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                        <input asp-for="Email" class="form-control" placeholder="name@company.com" id="emailInput" autofocus />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-semibold"></label>
+                        <input asp-for="Password" class="form-control" placeholder="••••••••" id="passwordInput" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" asp-for="RememberMe" />
+                        <label class="form-check-label" asp-for="RememberMe"></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Sign In</button>
+                </form>
+
+                <hr class="my-4" />
+
+                <!-- Quick Demo Login Buttons for Evaluator / Testing -->
+                <div class="bg-light p-3 rounded mb-3">
+                    <div class="fw-semibold small text-muted mb-2 text-center">Quick Demo Credentials (Click to fill):</div>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-dark btn-sm text-start" onclick="fillDemo('admin@crm.com', 'Admin@123')">
+                            <strong>Admin:</strong> admin@crm.com / Admin@123
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm text-start" onclick="fillDemo('manager@crm.com', 'Manager@123')">
+                            <strong>Manager:</strong> manager@crm.com / Manager@123
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm text-start" onclick="fillDemo('sales@crm.com', 'Sales@123')">
+                            <strong>Sales Executive:</strong> sales@crm.com / Sales@123
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <span class="text-muted small">Don't have an account?</span>
+                    <a asp-action="Register" class="small fw-semibold ms-1">Register now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function fillDemo(email, pass) {
+            document.getElementById('emailInput').value = email;
+            document.getElementById('passwordInput').value = pass;
+        }
+    </script>
+}

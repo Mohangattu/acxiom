@@ -1,0 +1,235 @@
+@model ReportsViewModel
+@{
+    ViewData["Title"] = "CRM Analytics & Management Reports - Acxiom CRM";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-bar-chart-line text-primary me-2"></i>CRM Management Reports</h2>
+        <p class="text-muted mb-0">Consolidated analytics for customer accounts, lead conversions, deal pipeline, and sales activity</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportSummaryCsv" class="btn btn-outline-secondary">
+            <i class="bi bi-download me-1"></i> Export Summary CSV
+        </a>
+    </div>
+</div>
+
+<!-- Executive Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card p-3">
+            <span class="text-muted small fw-semibold">Customer Base</span>
+            <h3 class="fw-bold text-dark mb-0 mt-1">@Model.TotalCustomers</h3>
+            <span class="text-success small fw-semibold">@Model.ActiveCustomers Active Accounts</span>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card p-3">
+            <span class="text-muted small fw-semibold">Lead Conversion Rate</span>
+            <h3 class="fw-bold text-primary mb-0 mt-1">@Model.LeadConversionRate.ToString("N1")%</h3>
+            <span class="text-muted small">@Model.ConvertedLeads converted of @Model.TotalLeads leads</span>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card p-3">
+            <span class="text-muted small fw-semibold">Active Deal Pipeline</span>
+            <h3 class="fw-bold text-info mb-0 mt-1">@Model.TotalPipelineValue.ToString("C0")</h3>
+            <span class="text-muted small">Weighted: @Model.WeightedPipelineValue.ToString("C0")</span>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card p-3">
+            <span class="text-muted small fw-semibold">Closed Won Revenue</span>
+            <h3 class="fw-bold text-success mb-0 mt-1">@Model.WonRevenue.ToString("C0")</h3>
+            <span class="text-muted small">Win Rate: @Model.WinRate.ToString("N1")%</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Opportunity Pipeline by Stage -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-funnel me-2 text-primary"></i>Sales Pipeline by Stage</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Pipeline Stage</th>
+                                <th class="text-center">Deals</th>
+                                <th>Total Value</th>
+                                <th>Weighted Projection</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var stage in Model.PipelineByStage)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-semibold">
+                                        @if (stage.StageName == "Won")
+                                        {
+                                            <span class="badge bg-success me-2">Won</span>
+                                        }
+                                        else if (stage.StageName == "Lost")
+                                        {
+                                            <span class="badge bg-danger me-2">Lost</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-primary me-2">@stage.StageName</span>
+                                        }
+                                        @stage.StageName
+                                    </td>
+                                    <td class="text-center">@stage.Count</td>
+                                    <td class="fw-bold text-dark">@stage.TotalAmount.ToString("C0")</td>
+                                    <td class="text-muted">@stage.WeightedAmount.ToString("C0")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lead Funnel Breakdown -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-filter-circle me-2 text-info"></i>Lead Acquisition Funnel</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                        <span><span class="badge bg-secondary me-2">New</span> New Uncontacted Leads:</span>
+                        <span class="fw-bold">@Model.NewLeads</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                        <span><span class="badge bg-info text-dark me-2">Contacted</span> In Contact:</span>
+                        <span class="fw-bold">@Model.ContactedLeads</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                        <span><span class="badge bg-primary me-2">Qualified</span> Qualified Prospects:</span>
+                        <span class="fw-bold">@Model.QualifiedLeads</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                        <span><span class="badge bg-success me-2">Converted</span> Converted to Customer Accounts:</span>
+                        <span class="fw-bold text-success">@Model.ConvertedLeads</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                        <span><span class="badge bg-danger me-2">Lost</span> Closed / Unqualified:</span>
+                        <span class="fw-bold text-danger">@Model.LostLeads</span>
+                    </li>
+                </ul>
+
+                <div class="mt-4 p-3 bg-light rounded text-center">
+                    <span class="text-muted small">Overall Lead Conversion Efficiency:</span>
+                    <h4 class="fw-bold text-success mb-0 mt-1">@Model.LeadConversionRate.ToString("N1")%</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Follow-Up Activity Breakdown -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-calendar-check me-2 text-success"></i>Follow-Up Activities & Tasks</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2 mb-3">
+                    <div class="col-4 text-center p-2 bg-light rounded">
+                        <small class="text-muted d-block">Total Tasks</small>
+                        <h5 class="fw-bold mb-0">@Model.TotalFollowUps</h5>
+                    </div>
+                    <div class="col-4 text-center p-2 bg-light rounded">
+                        <small class="text-muted d-block">Pending</small>
+                        <h5 class="fw-bold text-warning mb-0">@Model.PendingFollowUps</h5>
+                    </div>
+                    <div class="col-4 text-center p-2 bg-light rounded">
+                        <small class="text-muted d-block">Completed</small>
+                        <h5 class="fw-bold text-success mb-0">@Model.CompletedFollowUps</h5>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold small text-muted text-uppercase mt-3 mb-2">Activities by Type</h6>
+                <div class="list-group list-group-flush">
+                    @foreach (var fType in Model.FollowUpsByType)
+                    {
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between">
+                            <span>@fType.Key</span>
+                            <span class="fw-semibold badge bg-light text-dark border">@fType.Value</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers by Industry -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-buildings me-2 text-primary"></i>Customer Industry Distribution</h5>
+            </div>
+            <div class="card-body">
+                @if (!Model.CustomersByIndustry.Any())
+                {
+                    <p class="text-muted small">No customer industry data recorded.</p>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var ind in Model.CustomersByIndustry)
+                        {
+                            <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-dot text-primary fs-4 align-middle"></i>@ind.Key</span>
+                                <span class="badge bg-primary rounded-pill">@ind.Value Accounts</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sales Representative Performance Leaderboard -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-trophy me-2 text-warning"></i>Sales Representative Performance Leaderboard</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Sales Representative</th>
+                        <th>Email</th>
+                        <th class="text-center">Active Deals</th>
+                        <th>Won Revenue</th>
+                        <th class="text-center">Tasks Completed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var rep in Model.SalesRepPerformance)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-semibold"><i class="bi bi-person-circle text-muted me-2"></i>@rep.RepName</td>
+                            <td class="text-muted">@rep.Email</td>
+                            <td class="text-center"><span class="badge bg-light text-dark border">@rep.ActiveDeals</span></td>
+                            <td class="fw-bold text-success">@rep.WonRevenue.ToString("C0")</td>
+                            <td class="text-center"><span class="badge bg-success-subtle text-success border">@rep.TasksCompleted</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

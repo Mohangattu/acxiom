@@ -1,0 +1,142 @@
+@model FollowUp
+@{
+    ViewData["Title"] = $"{Model.Subject} - Follow-Up Details";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 small">
+                <li class="breadcrumb-item"><a asp-action="Index">Follow-Ups</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Subject</li>
+            </ol>
+        </nav>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="fw-bold mb-0">@Model.Subject</h2>
+            @if (Model.Status == FollowUpStatus.Completed)
+            {
+                <span class="badge bg-success">Completed</span>
+            }
+            else
+            {
+                <span class="badge bg-warning text-dark">Pending</span>
+            }
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <form asp-action="ToggleComplete" asp-route-id="@Model.Id" method="post" class="d-inline">
+            <button type="submit" class="btn @(Model.Status == FollowUpStatus.Completed ? "btn-outline-warning" : "btn-success")">
+                <i class="bi @(Model.Status == FollowUpStatus.Completed ? "bi-arrow-counterclockwise" : "bi-check2-circle") me-1"></i>
+                @(Model.Status == FollowUpStatus.Completed ? "Reopen Task" : "Mark as Completed")
+            </button>
+        </form>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0">Activity Information</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted">Activity Type:</span>
+                        <span class="badge bg-light text-dark border">@Model.Type</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted">Priority:</span>
+                        @if (Model.Priority == PriorityLevel.Urgent)
+                        {
+                            <span class="badge bg-danger">Urgent</span>
+                        }
+                        else if (Model.Priority == PriorityLevel.High)
+                        {
+                            <span class="badge bg-warning text-dark">High</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@Model.Priority</span>
+                        }
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted">Due Date & Time:</span>
+                        <span class="fw-semibold">@Model.DueDate.ToLocalTime().ToString("MMMM dd, yyyy hh:mm tt")</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted">Assigned User:</span>
+                        <span class="fw-semibold">@(Model.AssignedToUser?.FullName ?? "Unassigned")</span>
+                    </li>
+                    @if (Model.Customer != null)
+                    {
+                        <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                            <span class="text-muted">Related Customer:</span>
+                            <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId" class="fw-semibold text-decoration-none">
+                                @Model.Customer.Name
+                            </a>
+                        </li>
+                    }
+                    @if (Model.Lead != null)
+                    {
+                        <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                            <span class="text-muted">Related Lead:</span>
+                            <a asp-controller="Leads" asp-action="Details" asp-route-id="@Model.LeadId" class="fw-semibold text-decoration-none">
+                                @Model.Lead.FullName
+                            </a>
+                        </li>
+                    }
+                    @if (Model.Opportunity != null)
+                    {
+                        <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                            <span class="text-muted">Related Opportunity:</span>
+                            <a asp-controller="Opportunities" asp-action="Details" asp-route-id="@Model.OpportunityId" class="fw-semibold text-decoration-none">
+                                @Model.Opportunity.Title
+                            </a>
+                        </li>
+                    }
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted">Created Date:</span>
+                        <span class="fw-semibold">@Model.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</span>
+                    </li>
+                    @if (Model.CompletedAt.HasValue)
+                    {
+                        <li class="list-group-item px-0 py-2 d-flex justify-content-between bg-success-subtle rounded p-2 mt-2">
+                            <span class="text-success fw-semibold">Completed Date:</span>
+                            <span class="text-success fw-bold">@Model.CompletedAt.Value.ToLocalTime().ToString("MMMM dd, yyyy hh:mm tt")</span>
+                        </li>
+                    }
+                </ul>
+
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="mt-4">
+                        <label class="fw-semibold small text-muted">Notes / Agenda:</label>
+                        <div class="p-3 bg-light rounded text-secondary small mt-1">@Model.Notes</div>
+                    </div>
+                }
+
+                <!-- Quick Reschedule Card -->
+                <div class="mt-4 p-3 bg-light rounded border">
+                    <h6 class="fw-bold mb-2"><i class="bi bi-clock-history me-1"></i> Reschedule Task</h6>
+                    <form asp-action="Reschedule" asp-route-id="@Model.Id" method="post" class="row g-2 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label small text-muted">New Due Date & Time</label>
+                            <input type="datetime-local" name="newDate" class="form-control form-control-sm" required min="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" value="@DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-ddT10:00")" />
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small text-muted">Reschedule Reason (Optional)</label>
+                            <input type="text" name="notes" class="form-control form-control-sm" placeholder="e.g. Client requested postponement" />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-sm btn-primary w-100">Reschedule</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

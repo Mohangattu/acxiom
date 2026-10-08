@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Welcome - Acxiom CRM";
+}
+
+<div class="row align-items-center py-5">
+    <div class="col-lg-7">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill mb-3">
+            Academic Final Year B.Tech Project
+        </span>
+        <h1 class="display-4 fw-bold mb-3 text-dark">
+            Streamlined Customer Relationship Management System
+        </h1>
+        <p class="lead text-muted mb-4">
+            A comprehensive, clean, and intuitive CRM application designed with ASP.NET Core 8.0, Entity Framework Core, ASP.NET Core Identity, and Bootstrap 5.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 mb-5">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-4 fw-semibold shadow-sm">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to CRM
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary btn-lg px-4">
+                Register New User
+            </a>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <div class="card h-100 border-0 bg-white shadow-sm p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="p-2 bg-primary-subtle text-primary rounded me-3">
+                            <i class="bi bi-building fs-5"></i>
+                        </div>
+                        <h6 class="mb-0 fw-bold">Customer Management</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Organize customer accounts, contact details, company information, and full engagement history.</p>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card h-100 border-0 bg-white shadow-sm p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="p-2 bg-success-subtle text-success rounded me-3">
+                            <i class="bi bi-funnel fs-5"></i>
+                        </div>
+                        <h6 class="mb-0 fw-bold">Lead Conversion</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Track prospect leads from acquisition to qualification and one-click conversion into customers.</p>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card h-100 border-0 bg-white shadow-sm p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="p-2 bg-warning-subtle text-warning rounded me-3">
+                            <i class="bi bi-graph-up-arrow fs-5"></i>
+                        </div>
+                        <h6 class="mb-0 fw-bold">Opportunity Pipeline</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Monitor deal stages from Prospecting to Closed Won with real-time revenue analytics.</p>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card h-100 border-0 bg-white shadow-sm p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="p-2 bg-info-subtle text-info rounded me-3">
+                            <i class="bi bi-shield-check fs-5"></i>
+                        </div>
+                        <h6 class="mb-0 fw-bold">Role-Based Security & Audit</h6>
+                    </div>
+                    <p class="text-muted small mb-0">Granular role-based access for Admin, Manager, and Sales Reps with complete audit logging.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5 mt-5 mt-lg-0">
+        <div class="card shadow border-0 bg-white p-4">
+            <h5 class="fw-bold mb-3 text-primary">
+                <i class="bi bi-key-fill me-1"></i> Quick Demo Access
+            </h5>
+            <p class="text-muted small mb-3">Pre-configured role accounts available for evaluation:</p>
+
+            <div class="list-group list-group-flush mb-4">
+                <div class="list-group-item px-0 py-2">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong>Administrator</strong>
+                        <span class="badge bg-danger">Admin</span>
+                    </div>
+                    <div class="small text-muted font-monospace">admin@crm.com &bull; Admin@123</div>
+                    <small class="text-muted">Full access to User Management, Audit Logs, and all CRM data.</small>
+                </div>
+                <div class="list-group-item px-0 py-2">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong>Sales Manager</strong>
+                        <span class="badge bg-primary">Manager</span>
+                    </div>
+                    <div class="small text-muted font-monospace">manager@crm.com &bull; Manager@123</div>
+                    <small class="text-muted">Manages team pipeline, opportunities, leads, and customer reports.</small>
+                </div>
+                <div class="list-group-item px-0 py-2">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong>Sales Executive</strong>
+                        <span class="badge bg-success">SalesExecutive</span>
+                    </div>
+                    <div class="small text-muted font-monospace">sales@crm.com &bull; Sales@123</div>
+                    <small class="text-muted">Handles assigned leads, customer accounts, and scheduled follow-ups.</small>
+                </div>
+            </div>
+
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100 fw-semibold">
+                Proceed to Login
+            </a>
+        </div>
+    </div>
+</div>

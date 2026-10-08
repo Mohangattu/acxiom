@@ -1,0 +1,35 @@
+@model Opportunity
+@{
+    ViewData["Title"] = $"Delete Opportunity - {Model.Title}";
+}
+
+<div class="row justify-content-center my-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Delete Opportunity Confirmation</h5>
+            </div>
+            <div class="card-body p-4">
+                <p class="lead">Are you sure you want to delete this opportunity deal?</p>
+                
+                <div class="bg-light p-3 rounded mb-4">
+                    <div class="mb-2"><strong>Code:</strong> <span class="badge bg-secondary font-monospace">@(Model.OpportunityCode ?? $"OPP-{Model.Id:D4}")</span></div>
+                    <div class="mb-2"><strong>Title:</strong> @Model.Title</div>
+                    <div class="mb-2"><strong>Customer:</strong> @(Model.Customer?.Name ?? "N/A")</div>
+                    <div class="mb-2"><strong>Amount:</strong> <span class="text-success fw-bold">@Model.Amount.ToString("C0")</span></div>
+                    <div class="mb-2"><strong>Stage:</strong> @Model.Stage</div>
+                    <div class="mb-2"><strong>Assigned To:</strong> @(Model.AssignedToUser?.FullName ?? "Unassigned")</div>
+                    <div><strong>Created:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy")</div>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-danger px-4 fw-semibold">Delete Opportunity</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

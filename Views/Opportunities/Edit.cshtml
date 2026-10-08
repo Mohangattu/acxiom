@@ -1,0 +1,150 @@
+@model Opportunity
+@{
+    ViewData["Title"] = $"Edit {Model.Title} - Acxiom CRM";
+    var isSalesExecutive = ViewBag.IsSalesExecutive as bool? ?? false;
+}
+
+<div class="row justify-content-center my-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1 small">
+                        <li class="breadcrumb-item"><a asp-action="Index">Opportunities</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">@(Model.OpportunityCode ?? $"OPP-{Model.Id:D4}")</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                    </ol>
+                </nav>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary font-monospace">@(Model.OpportunityCode ?? $"OPP-{Model.Id:D4}")</span>
+                    <h4 class="mb-0 fw-bold">Edit Opportunity</h4>
+                </div>
+                <small class="text-muted">Modify deal value, probability, stage, and schedule</small>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger py-2" role="alert">
+                        <div asp-validation-summary="All" class="text-danger small mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="OpportunityCode" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    <input type="hidden" asp-for="CreatedBy" />
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label fw-semibold">Opportunity Name</label> <span class="text-danger">*</span>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="CustomerId" class="form-label fw-semibold">Customer Organization</label> <span class="text-danger">*</span>
+                            <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.CustomerId"></select>
+                            <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Amount" class="form-label fw-semibold">Deal Amount ($)</label> <span class="text-danger">*</span>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Amount" class="form-control" type="number" step="0.01" />
+                            </div>
+                            <span asp-validation-for="Amount" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label asp-for="Stage" class="form-label fw-semibold">Stage</label>
+                            <select asp-for="Stage" class="form-select" id="stageSelect">
+                                <option value="@OpportunityStage.Qualification" selected="@(Model.Stage == OpportunityStage.Qualification)">Qualification</option>
+                                <option value="@OpportunityStage.Proposal" selected="@(Model.Stage == OpportunityStage.Proposal)">Proposal</option>
+                                <option value="@OpportunityStage.Negotiation" selected="@(Model.Stage == OpportunityStage.Negotiation)">Negotiation</option>
+                                <option value="@OpportunityStage.ClosedWon" selected="@(Model.Stage == OpportunityStage.ClosedWon)">Won</option>
+                                <option value="@OpportunityStage.ClosedLost" selected="@(Model.Stage == OpportunityStage.ClosedLost)">Lost</option>
+                                <option value="@OpportunityStage.Prospecting" selected="@(Model.Stage == OpportunityStage.Prospecting)">Prospecting</option>
+                            </select>
+                            <span asp-validation-for="Stage" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Probability" class="form-label fw-semibold">Probability (%)</label>
+                            <div class="input-group">
+                                <input asp-for="Probability" class="form-control" id="probInput" type="number" min="0" max="100" />
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <span asp-validation-for="Probability" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="ExpectedCloseDate" class="form-label fw-semibold">Expected Close Date</label> <span class="text-danger">*</span>
+                            <input type="date" asp-for="ExpectedCloseDate" class="form-control" value="@Model.ExpectedCloseDate.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="ExpectedCloseDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Source" class="form-label fw-semibold">Source</label>
+                            <input asp-for="Source" class="form-control" />
+                            <span asp-validation-for="Source" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="AssignedToUserId" class="form-label fw-semibold">Assigned Sales Rep</label>
+                            @if (isSalesExecutive)
+                            {
+                                <input type="text" class="form-control bg-light" value="@Model.AssignedTo" readonly />
+                                <input type="hidden" asp-for="AssignedToUserId" />
+                            }
+                            else
+                            {
+                                <select asp-for="AssignedToUserId" class="form-select" asp-items="ViewBag.AssignedToUserId">
+                                    <option value="">-- Select Sales Rep --</option>
+                                </select>
+                            }
+                            <span asp-validation-for="AssignedToUserId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="WinLossReason" class="form-label fw-semibold">Win / Loss Reason</label>
+                        <input asp-for="WinLossReason" class="form-control" placeholder="Specify reason if deal is won or lost..." />
+                        <span asp-validation-for="WinLossReason" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label fw-semibold">Deal Notes</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('stageSelect')?.addEventListener('change', function() {
+            var stage = parseInt(this.value);
+            var prob = document.getElementById('probInput');
+            if (!prob) return;
+            switch(stage) {
+                case 1: prob.value = 10; break;
+                case 2: prob.value = 30; break;
+                case 3: prob.value = 60; break;
+                case 4: prob.value = 80; break;
+                case 5: prob.value = 100; break;
+                case 6: prob.value = 0; break;
+            }
+        });
+    </script>
+}

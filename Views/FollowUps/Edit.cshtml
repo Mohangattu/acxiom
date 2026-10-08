@@ -1,0 +1,114 @@
+@model FollowUp
+@{
+    ViewData["Title"] = $"Edit {Model.Subject} - Acxiom CRM";
+}
+
+<div class="row justify-content-center my-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1 small">
+                        <li class="breadcrumb-item"><a asp-action="Index">Follow-Ups</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">@Model.Subject</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                    </ol>
+                </nav>
+                <h4 class="mb-0 fw-bold">Edit Follow-Up / Task</h4>
+                <small class="text-muted">Modify activity schedule, priority, notes, or assigned team member</small>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger py-2" role="alert">
+                        <div asp-validation-summary="All" class="text-danger small mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    <input type="hidden" asp-for="CompletedAt" />
+
+                    <div class="mb-3">
+                        <label asp-for="Subject" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                        <input asp-for="Subject" class="form-control" />
+                        <span asp-validation-for="Subject" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label asp-for="Type" class="form-label fw-semibold"></label>
+                            <select asp-for="Type" class="form-select" asp-items="Html.GetEnumSelectList<FollowUpType>()"></select>
+                            <span asp-validation-for="Type" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Priority" class="form-label fw-semibold"></label>
+                            <select asp-for="Priority" class="form-select" asp-items="Html.GetEnumSelectList<PriorityLevel>()"></select>
+                            <span asp-validation-for="Priority" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="DueDate" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                            <input type="datetime-local" asp-for="DueDate" class="form-control" value="@Model.DueDate.ToString("yyyy-MM-ddTHH:mm")" />
+                            <span asp-validation-for="DueDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label asp-for="CustomerId" class="form-label fw-semibold"></label>
+                            <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.CustomerId">
+                                <option value="">-- None / Select Customer --</option>
+                            </select>
+                            <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="LeadId" class="form-label fw-semibold"></label>
+                            <select asp-for="LeadId" class="form-select" asp-items="ViewBag.LeadId">
+                                <option value="">-- None / Select Lead --</option>
+                            </select>
+                            <span asp-validation-for="LeadId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="OpportunityId" class="form-label fw-semibold"></label>
+                            <select asp-for="OpportunityId" class="form-select" asp-items="ViewBag.OpportunityId">
+                                <option value="">-- None / Select Opportunity --</option>
+                            </select>
+                            <span asp-validation-for="OpportunityId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="AssignedToUserId" class="form-label fw-semibold"></label>
+                            <select asp-for="AssignedToUserId" class="form-select" asp-items="ViewBag.AssignedToUserId">
+                                <option value="">-- Select Assigned User --</option>
+                            </select>
+                            <span asp-validation-for="AssignedToUserId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Status" class="form-label fw-semibold"></label>
+                            <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<FollowUpStatus>()"></select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

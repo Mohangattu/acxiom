@@ -1,0 +1,100 @@
+@model UserProfileViewModel
+@{
+    ViewData["Title"] = "My Profile - Acxiom CRM";
+}
+
+<div class="row justify-content-center my-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0 fw-bold">My Profile</h4>
+                        <small class="text-muted">Manage your personal CRM account information</small>
+                    </div>
+                    <span class="badge bg-primary fs-6 px-3 py-2">Role: @Model.Role</span>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger py-2" role="alert">
+                        <div asp-validation-summary="All" class="text-danger small mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="Profile" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <h5 class="fw-semibold mb-3 text-secondary">Basic Information</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label fw-semibold"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <input asp-for="Email" class="form-control" readonly disabled />
+                            <small class="text-muted">Email cannot be changed directly.</small>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="+1 (555) 000-0000" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Department" class="form-label fw-semibold"></label>
+                            <input asp-for="Department" class="form-control" />
+                            <span asp-validation-for="Department" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <h5 class="fw-semibold mb-3 text-secondary">Change Password <small class="text-muted fw-normal fs-6">(leave blank to keep current password)</small></h5>
+                    
+                    <div class="mb-3">
+                        <label asp-for="CurrentPassword" class="form-label fw-semibold"></label>
+                        <input asp-for="CurrentPassword" class="form-control" placeholder="••••••••" />
+                        <span asp-validation-for="CurrentPassword" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="NewPassword" class="form-label fw-semibold"></label>
+                            <input asp-for="NewPassword" class="form-control" placeholder="••••••••" />
+                            <span asp-validation-for="NewPassword" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ConfirmNewPassword" class="form-label fw-semibold"></label>
+                            <input asp-for="ConfirmNewPassword" class="form-control" placeholder="••••••••" />
+                            <span asp-validation-for="ConfirmNewPassword" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">Back to Dashboard</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

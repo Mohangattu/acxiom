@@ -1,0 +1,172 @@
+@model IEnumerable<AuditLog>
+@{
+    ViewData["Title"] = "System Audit Logs - Acxiom CRM";
+    var currentPage = (int)ViewBag.CurrentPage;
+    var totalPages = (int)ViewBag.TotalPages;
+    var totalItems = (int)ViewBag.TotalItems;
+    var searchTerm = ViewBag.SearchTerm as string;
+    var entityFilter = ViewBag.EntityFilter as string;
+    var actionFilter = ViewBag.ActionFilter as string;
+    var entities = ViewBag.Entities as List<string> ?? new List<string>();
+    var actions = ViewBag.Actions as List<string> ?? new List<string>();
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">System Audit Logs</h2>
+        <p class="text-muted mb-0">Track administrative events, entity modifications, and user activity history</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportCsv" class="btn btn-outline-secondary">
+            <i class="bi bi-download me-1"></i> Export Audit Log (CSV)
+        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <form asp-action="ClearLogs" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to clear all audit logs? This action is recorded.');">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-trash me-1"></i> Clear Logs
+                </button>
+            </form>
+        }
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-3">
+        <form method="get" asp-action="Index" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="searchTerm" value="@searchTerm" class="form-control border-start-0" placeholder="Search details or user..." />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="entityFilter" class="form-select">
+                    <option value="">All Entities / Modules</option>
+                    @foreach (var ent in entities)
+                    {
+                        <option value="@ent" selected="@(entityFilter == ent)">@ent</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="actionFilter" class="form-select">
+                    <option value="">All Action Types</option>
+                    @foreach (var act in actions)
+                    {
+                        <option value="@act" selected="@(actionFilter == act)">@act</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+                @if (!string.IsNullOrEmpty(searchTerm) || !string.IsNullOrEmpty(entityFilter) || !string.IsNullOrEmpty(actionFilter))
+                {
+                    <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Logs Table -->
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-journal-text text-muted display-4"></i>
+                <h5 class="mt-3 text-secondary">No audit logs found</h5>
+                <p class="text-muted small">Logs will appear automatically as users interact with the system.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Timestamp</th>
+                            <th>Entity</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                            <th>User</th>
+                            <th class="text-end pe-4">IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 text-nowrap small text-muted">
+                                    @log.Timestamp.ToLocalTime().ToString("MMM dd, yyyy HH:mm:ss")
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">@log.EntityName</span>
+                                    @if (!string.IsNullOrEmpty(log.EntityId))
+                                    {
+                                        <small class="text-muted font-monospace ms-1">#@log.EntityId</small>
+                                    }
+                                </td>
+                                <td>
+                                    @if (log.Action == "Create" || log.Action == "Register")
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">@log.Action</span>
+                                    }
+                                    else if (log.Action == "Update" || log.Action == "ProfileUpdate" || log.Action == "StageChange")
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">@log.Action</span>
+                                    }
+                                    else if (log.Action == "Delete")
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">@log.Action</span>
+                                    }
+                                    else if (log.Action == "Convert")
+                                    {
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle">@log.Action</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">@log.Action</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="text-dark">@log.Details</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold small"><i class="bi bi-person me-1 text-muted"></i>@(log.UserName ?? "System")</div>
+                                </td>
+                                <td class="text-end pe-4 font-monospace small text-muted">
+                                    @(string.IsNullOrEmpty(log.IpAddress) ? "Local" : log.IpAddress)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (totalPages > 1)
+            {
+                <div class="card-footer bg-white border-0 py-3">
+                    <nav aria-label="Audit pagination">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-searchTerm="@searchTerm" asp-route-entityFilter="@entityFilter" asp-route-actionFilter="@actionFilter">Previous</a>
+                            </li>
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                <li class="page-item @(currentPage == i ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchTerm="@searchTerm" asp-route-entityFilter="@entityFilter" asp-route-actionFilter="@actionFilter">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-searchTerm="@searchTerm" asp-route-entityFilter="@entityFilter" asp-route-actionFilter="@actionFilter">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        }
+    </div>
+</div>
